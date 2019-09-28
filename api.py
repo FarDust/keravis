@@ -1,11 +1,16 @@
-import flask
+from flask import Flask, render_template
 import json
-app = flask.Flask(__name__)
+app = Flask(__name__)
 
 
-@app.route("/")
-def index():
+@app.route('/')
+def hello():
     return json.dumps('API Iniciada')
+
+
+@app.route('/index', methods=['GET'])
+def index():
+    return render_template('index.html')
 
 
 if __name__ == "__main__":
