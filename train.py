@@ -49,7 +49,7 @@ def trainNetwork(s, readout, h_fc1, sess):
     else:
         print("No previous network weights found")
 
-    log_file = open("logs/log", 'w', 0)
+    log_file = open("logs/log", 'w')
 
     t = 0
     epsilon = INITIAL_ESPSILON 
@@ -106,8 +106,8 @@ def trainNetwork(s, readout, h_fc1, sess):
         if t % 10000 == 0:
             saver.save(sess, 'saved_networks/curve-fever-dqn', global_step = t)
 
-        print("TIMESTEP {} | STATE {} | EPSILON {} | ACTION {} | REWARD {} | Q_MAX {}").format(
-            t, get_current_state(t), epsilon, action_index, r_t, np.max(readout_t))
+        print("TIMESTEP {} | STATE {} | EPSILON {} | ACTION {} | REWARD {} | Q_MAX {}".format(
+            t, get_current_state(t), epsilon, action_index, r_t, np.max(readout_t)))
 
 def train():
     sess = tf.InteractiveSession()

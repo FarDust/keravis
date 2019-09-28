@@ -1,0 +1,2 @@
+model_checkpoint_path: "curve-fever-dqn-10000"
+all_model_checkpoint_paths: "curve-fever-dqn-10000"
