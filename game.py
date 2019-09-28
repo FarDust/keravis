@@ -61,7 +61,7 @@ class Game():
     def reset_game(self):
         self.curve.position = pygame.math.Vector2(50, 50)
         score = len(self.curve.history)
-        print("Score : {} | best was {}".format(score, self.best_score))
+        # print("Score : {} | best was {}".format(score, self.best_score))
         if score > self.best_score:
             self.best_score = score
         self.latest_score = score
