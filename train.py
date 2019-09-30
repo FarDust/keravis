@@ -46,6 +46,8 @@ def trainNetwork(s, readout, h_fc1, sess):
     s_t = np.stack((x_t, x_t, x_t, x_t), axis=2)
 
     saver = tf.train.Saver()
+    merged = tf.summary.merge_all()
+    file_writer = tf.summary.FileWriter('./logs', sess.graph)
     sess.run(tf.initialize_all_variables())
     checkpoint = tf.train.get_checkpoint_state("saved_networks")
     if checkpoint and checkpoint.model_checkpoint_path:
@@ -62,6 +64,7 @@ def trainNetwork(s, readout, h_fc1, sess):
         epsilon = INITIAL_ESPSILON
         while 1:
             readout_t = readout.eval(feed_dict={s: [s_t]})[0]
+            tf.summary.scalar('q', readout_t)
             a_t = np.zeros(ACTIONS)
             action_index = 0
             if random.random() <= epsilon:
@@ -86,46 +89,51 @@ def trainNetwork(s, readout, h_fc1, sess):
                     }
                 )
 
-        x_t1 = np.reshape(x_t1, (80, 80, 1))
-        s_t1 = np.append(x_t1, s_t[:, :, :3], axis=2)
+            x_t1 = np.reshape(x_t1, (80, 80, 1))
+            s_t1 = np.append(x_t1, s_t[:, :, :3], axis=2)
 
-        D.append((s_t, a_t, r_t, s_t1))
-        if len(D) > REPLAY_MEMORY:
-            D.popleft()
+            D.append((s_t, a_t, r_t, s_t1))
+            if len(D) > REPLAY_MEMORY:
+                D.popleft()
 
-        if t > OBSERVE:
-            minibatch = random.sample(D, BATCH_SIZE)
+            if t > OBSERVE:
+                minibatch = random.sample(D, BATCH_SIZE)
 
-            s_j_batch = [d[0] for d in minibatch]
-            a_batch = [d[1] for d in minibatch]
-            r_batch = [d[2] for d in minibatch]
-            s_j1_batch = [d[3] for d in minibatch]
+                s_j_batch = [d[0] for d in minibatch]
+                a_batch = [d[1] for d in minibatch]
+                r_batch = [d[2] for d in minibatch]
+                s_j1_batch = [d[3] for d in minibatch]
 
-            y_batch = []
-            readout_j1_batch = readout.eval(feed_dict={s: s_j1_batch})
-            for i in range(0, len(minibatch)):
-                y_batch.append(
-                    r_batch[i] + GAMMA * np.max(readout_j1_batch[i])
+                y_batch = []
+                readout_j1_batch = readout.eval(feed_dict={s: s_j1_batch})
+                for i in range(0, len(minibatch)):
+                    y_batch.append(
+                        r_batch[i] + GAMMA * np.max(readout_j1_batch[i])
+                    )
+
+                summary, _ = sess.run([merged, train_step],
+                    feed_dict={y: y_batch, a: a_batch, s: s_j_batch}
                 )
 
-            train_step.run(
-                feed_dict={y: y_batch, a: a_batch, s: s_j_batch}
-            )
-
             s_t = s_t1
-            t += 1
-
+            t += 1   
+            
             # save progress every 10000 iterations
             if t % 10000 == 0:
                 saver.save(
                     sess, "saved_networks/curve-fever-dqn", global_step=t
                 )
+                
+            if t % 1000 == 0: 
+                file_writer.add_summary(summary, t//1000)
 
-        # print("TIMESTEP {} | STATE {} | EPSILON {} | ACTION {} | REWARD {} | Q_MAX {}".format(
-        # t, get_current_state(t), epsilon, action_index, r_t, np.max(readout_t)))
+            print("TIMESTEP {} | STATE {} | EPSILON {} | ACTION {} | REWARD {} | Q_MAX {}".format(
+            t, get_current_state(t), epsilon, action_index, r_t, np.max(readout_t)))
 
 
 def train():
+    import os
+    os.environ['SDL_VIDEODRIVER']='dummy'
     sess = tf.InteractiveSession()
     s, readout, h_fc1 = createGraph()
     trainNetwork(s, readout, h_fc1, sess)
