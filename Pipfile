@@ -5,6 +5,8 @@ verify_ssl = true
 
 [dev-packages]
 black = "*"
+pep8 = "*"
+flake8 = "*"
 
 [packages]
 pygame = "==1.9.6"

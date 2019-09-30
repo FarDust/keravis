@@ -5,6 +5,7 @@ import numpy as np
 from collections import deque
 from conv_net import createGraph
 import tensorflow as tf
+import time
 from csv import DictWriter
 
 ACTIONS = 3
@@ -63,6 +64,7 @@ def trainNetwork(s, readout, h_fc1, sess):
         t = 0
         epsilon = INITIAL_ESPSILON
         while 1:
+            actual_time = time.time()
             readout_t = readout.eval(feed_dict={s: [s_t]})[0]
             tf.summary.scalar('q', readout_t)
             a_t = np.zeros(ACTIONS)
@@ -126,9 +128,9 @@ def trainNetwork(s, readout, h_fc1, sess):
                 
             if t % 1000 == 0: 
                 file_writer.add_summary(summary, t//1000)
-
-            print("TIMESTEP {} | STATE {} | EPSILON {} | ACTION {} | REWARD {} | Q_MAX {}".format(
-            t, get_current_state(t), epsilon, action_index, r_t, np.max(readout_t)))
+                
+            # print("TIMESTEP {} | STATE {} | EPSILON {} | ACTION {} | REWARD {} | Q_MAX {}".format(
+            # t, get_current_state(t), epsilon, action_index, r_t, np.max(readout_t)))
 
 
 def train():
