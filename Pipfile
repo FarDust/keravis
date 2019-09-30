@@ -4,6 +4,8 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pep8 = "*"
+flake8 = "*"
 
 [packages]
 absl-py = "==0.8.0"
@@ -377,4 +379,4 @@ vega_datasets = "==0.7.0"
 Werkzeug = "==0.15.6"
 
 [requires]
-python_version = "3.7"
+python_version = "3.6.8"
