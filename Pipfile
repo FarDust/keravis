@@ -5,7 +5,6 @@ verify_ssl = true
 
 [dev-packages]
 black = "*"
-pep8 = "*"
 flake8 = "*"
 
 [packages]
