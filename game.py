@@ -1,5 +1,7 @@
 import pygame
 import cv2
+import json
+import time
 from fever import Curve
 
 background = (0,0,0)
@@ -64,7 +66,14 @@ class Game():
         # print("Score : {} | best was {}".format(score, self.best_score))
         if score > self.best_score:
             self.best_score = score
+        timestamp = int(time.time() * 1e7)
+        json.dump({
+            'history': list(map(lambda pos: {'x': int(pos.x), 'y': int(pos.y)}, self.curve.history)),
+            'timestampE7': timestamp,
+            'best_score': self.best_score,
+            },open('game_data/game_{}.json'.format(timestamp), 'w'))
         self.latest_score = score
+        
         self.curve.history = []
 
     def pre_process_frame(self, raw_frame):
