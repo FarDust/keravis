@@ -2,6 +2,7 @@ import pygame
 import cv2
 import json
 import time
+from itertools import count
 from fever import Curve
 
 background = (0,0,0)
@@ -15,6 +16,9 @@ class Game():
         self.screen_height = h
         self.best_score = 0
         self.latest_score = 0
+        self.time = time.time()
+        self.round_iter = count()
+        self.current = next(self.round_iter)
 
     def step(self, action):
         reward = self.update(action)
@@ -66,18 +70,20 @@ class Game():
         # print("Score : {} | best was {}".format(score, self.best_score))
         if score > self.best_score:
             self.best_score = score
-        timestamp = int(time.time() * 1e7)
+        timestamp = time.time() - self.time
         json.dump({
+            'round': self.current,
             'history': list(map(lambda pos: {'x': int(pos.x), 'y': int(pos.y)}, self.curve.history)),
-            'timestampE7': timestamp,
+            'timestamp': timestamp,
             'best_score': self.best_score,
-            },open('game_data/game_{}.json'.format(timestamp), 'w'))
-        self.latest_score = score
+            }, open('game_data/game_{}.json'.format(self.current), 'w'))
         
+        self.latest_score = score
+        self.time = time.time()
+        self.current = next(self.round_iter)
         self.curve.history = []
 
     def pre_process_frame(self, raw_frame):
         frame = cv2.cvtColor(cv2.resize(raw_frame, (frame_size, frame_size)), cv2.COLOR_BGR2GRAY)
         _, frame = cv2.threshold(frame, 1, 255, cv2.THRESH_BINARY)
         return frame
-
