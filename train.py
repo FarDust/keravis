@@ -123,20 +123,23 @@ def trainNetwork(s, readout, h_fc1, h_conv1, sess):
                     feed_dict={y: y_batch, a: a_batch, s: s_j_batch},
                 )
 
-                network = {
-                    "layer_0": result_conv_1[:, :, :, 0].tolist(),
-                    "layer_7": result_conv_1[:, :, :, 7].tolist(),
-                    "layer_15": result_conv_1[:, :, :, 15].tolist(),
-                    "layer_31": result_conv_1[:, :, :, 31].tolist(),
-                    "action": (
-                        a_t.tolist() if random_index <= epsilon else readout_t.tolist()
-                    ),
-                    "score": game.latest_score,
-                    "q_max": np.max(readout_t),
-                    "epsilon": epsilon,
-                    "timestampE7": int(record * 1e7),
-                }
-                game_network.append(network)
+            network = {
+                "layer_0": result_conv_1[:, :, :, 0].tolist(),
+                "layer_7": result_conv_1[:, :, :, 7].tolist(),
+                "layer_15": result_conv_1[:, :, :, 15].tolist(),
+                "layer_31": result_conv_1[:, :, :, 31].tolist(),
+                "action": (
+                    a_t.tolist() if random_index <= epsilon else readout_t.tolist()
+                ),
+                "score": int(game.latest_score),
+                "q_max": float(np.max(readout_t)),
+                "epsilon": float(epsilon),
+                "timestep": int(t),
+                "state": get_current_state(t),
+                "reward": float(r_t),
+                "timestampE7": int(record * 1e7),
+            }
+            game_network.append(network)
             s_t = s_t1
             t += 1
 
