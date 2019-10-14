@@ -34,6 +34,7 @@ class Idiom {
 class Idiom2 extends Idiom {
   constructor(source, selector) {
     super(source, selector)
+    this.data;
     d3.json(source, function(error, data) {
       if (error) throw error;
       
@@ -73,17 +74,31 @@ class Idiom2 extends Idiom {
     this.initilized = true;
   }
 
-  startSimulation() { 
-    this.data.forEach(element => {
-      console.log(element)
+  startSimulation() {
+    let baseColor = d3.hsl("#23d160");
+    let outputNodes = '#network > svg g g circle.node-output';
+    let timestep = 1000; 
+    this.data.forEach( (game, index) => {
+      setTimeout(() => {
+        let lightScale = d3.scaleLinear()
+          .domain([Math.min(...game.action), Math.max(...game.action)])
+          .range([0.7, 0.5]);
+        this.updateNodes(outputNodes, lightScale, baseColor, game.action)
+        console.log(index)
+      }, timestep*index);
     });
+  }
+
+  updateNodes(selector, scale, color, data) {
+    let nodes = d3.selectAll(selector).data(data)
+      .attr('fill', (d) => {
+        color.l = scale(d);
+        return color + "";
+      }).attr('value', d => d)
   }
   
   createNetworkNode(selector, cx, cy, r, name='null_layer') {
-    let myScale = d3.scaleLinear()
-      .domain([0, 10])
-      .range([0, 600]);
-    return selector
+    return selector.append('g')
       .append('circle')
       .classed('node', true)
       .attr('fill', '#23d160')
