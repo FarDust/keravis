@@ -94,7 +94,7 @@ def trainNetwork(s, readout, h_fc1, sess):
                         "epsilon": epsilon,
                     }
                 )
-                json.dump(game_network, open('logs/history/network-{}.json'.format(int(record * 1e7)), 'w'))
+                json.dump(game_network.copy(), open('logs/history/network-{}.json'.format(int(record * 1e7)), 'w'))
                 game_network = list()
 
 
@@ -124,25 +124,25 @@ def trainNetwork(s, readout, h_fc1, sess):
                     feed_dict={y: y_batch, a: a_batch, s: s_j_batch}
                 )
 
-                target = tf.trainable_variables()
-                print(target)
-                raise Exception
+                target = tf.trainable_variables()[0]
                 network = {
-                    target.name: tf.convert_to_tensor(target).eval().tolist(),
-                    'timestamp': record
+                    'layer1': tf.convert_to_tensor(target).eval()[:,:,:3,0].tolist(),
+                    'layer2': tf.convert_to_tensor(target).eval()[:,:,:3,1].tolist(),
+                    'layer3': tf.convert_to_tensor(target).eval()[:,:,:3,2].tolist(),
+                    'layer4': tf.convert_to_tensor(target).eval()[:,:,:3,3].tolist(),
+                    'timestampE7': int(record*1e7)
                     }
                 game_network.append(network)
             s_t = s_t1
             t += 1   
             
             # save progress every 10000 iterations
-            if t % 10000 == 0:
+            if t % 1000 == 0:
                 saver.save(
                     sess, "saved_networks/curve-fever-dqn", global_step=t
                 )
-                
-            if t % 1000 == 0: 
                 file_writer.add_summary(summary, t//1000)
+
             if t % 10 == 0: 
                 print("TIMESTEP {} | STATE {} | EPSILON {} | ACTION {} | REWARD {} | Q_MAX {}".format(
                 t, get_current_state(t), epsilon, action_index, r_t, np.max(readout_t)))
