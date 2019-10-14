@@ -7,6 +7,7 @@ from conv_net import createGraph
 import tensorflow as tf
 import time
 import json
+import sys
 from csv import DictWriter
 
 ACTIONS = 3
@@ -29,12 +30,10 @@ def get_current_state(timestep):
         return "train"
 
 
-def trainNetwork(s, readout, h_fc1, sess):
+def trainNetwork(s, readout, h_fc1, h_conv1, sess):
     a = tf.placeholder("float", [None, ACTIONS])
     y = tf.placeholder("float", [None])
-    readout_action = tf.reduce_sum(
-        tf.multiply(readout, a), reduction_indices=1
-    )
+    readout_action = tf.reduce_sum(tf.multiply(readout, a), reduction_indices=1)
     cost = tf.reduce_mean(tf.square(y - readout_action))
     train_step = tf.train.AdamOptimizer(LR).minimize(cost)
 
@@ -49,7 +48,7 @@ def trainNetwork(s, readout, h_fc1, sess):
 
     saver = tf.train.Saver()
     merged = tf.summary.merge_all()
-    file_writer = tf.summary.FileWriter('./logs', sess.graph)
+    file_writer = tf.summary.FileWriter("./logs", sess.graph)
     sess.run(tf.initialize_all_variables())
     checkpoint = tf.train.get_checkpoint_state("saved_networks")
     if checkpoint and checkpoint.model_checkpoint_path:
@@ -60,19 +59,27 @@ def trainNetwork(s, readout, h_fc1, sess):
 
     with open("logs/log.csv", "a") as file:
         log_file = DictWriter(
-            file, fieldnames=["timestamp", "score", "q_max", "epsilon"], 
+            file, fieldnames=["timestamp", "score", "q_max", "epsilon"]
         )
         t = 0
         epsilon = INITIAL_ESPSILON
         game_network = list()
         while 1:
-            actual_time = time.time()
+            events = pygame.event.get()
+            for event in events:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        sys.exit()
+                        raise SystemExit
+
             readout_t = readout.eval(feed_dict={s: [s_t]})[0]
-            tf.summary.scalar('q', readout_t)
+            result_conv_1 = h_conv1.eval(feed_dict={s: [s_t]})
+            tf.summary.scalar("q", readout_t)
             a_t = np.zeros(ACTIONS)
             action_index = 0
-            if random.random() <= epsilon:
-                # print('This is a random action')
+            random_index = random.random()
+            if random_index <= epsilon:
+                print("This is a random action")
                 action_index = random.randrange(ACTIONS)
                 a_t[action_index] = 1
             else:
@@ -85,18 +92,11 @@ def trainNetwork(s, readout, h_fc1, sess):
             x_t1, r_t = game.step(a_t)
             record = time.time()
             if r_t == -1:
-                
-                log_file.writerow(
-                    {
-                        "timestamp": t,
-                        "score": game.latest_score,
-                        "q_max": np.max(readout_t),
-                        "epsilon": epsilon,
-                    }
+                json.dump(
+                    game_network.copy(),
+                    open("logs/history/network-{}.json".format(int(record * 1e7)), "w"),
                 )
-                json.dump(game_network.copy(), open('logs/history/network-{}.json'.format(int(record * 1e7)), 'w'))
                 game_network = list()
-
 
             x_t1 = np.reshape(x_t1, (80, 80, 1))
             s_t1 = np.append(x_t1, s_t[:, :, :3], axis=2)
@@ -116,44 +116,54 @@ def trainNetwork(s, readout, h_fc1, sess):
                 y_batch = []
                 readout_j1_batch = readout.eval(feed_dict={s: s_j1_batch})
                 for i in range(0, len(minibatch)):
-                    y_batch.append(
-                        r_batch[i] + GAMMA * np.max(readout_j1_batch[i])
-                    )
+                    y_batch.append(r_batch[i] + GAMMA * np.max(readout_j1_batch[i]))
 
-                summary, _ = sess.run([merged, train_step],
-                    feed_dict={y: y_batch, a: a_batch, s: s_j_batch}
+                summary, _ = sess.run(
+                    [merged, train_step],
+                    feed_dict={y: y_batch, a: a_batch, s: s_j_batch},
                 )
 
-                target = tf.trainable_variables()[0]
                 network = {
-                    'layer1': tf.convert_to_tensor(target).eval()[:,:,:3,0].tolist(),
-                    'layer2': tf.convert_to_tensor(target).eval()[:,:,:3,1].tolist(),
-                    'layer3': tf.convert_to_tensor(target).eval()[:,:,:3,2].tolist(),
-                    'layer4': tf.convert_to_tensor(target).eval()[:,:,:3,3].tolist(),
-                    'timestampE7': int(record*1e7)
-                    }
+                    "layer_0": result_conv_1[:, :, :, 0].tolist(),
+                    "layer_7": result_conv_1[:, :, :, 7].tolist(),
+                    "layer_15": result_conv_1[:, :, :, 15].tolist(),
+                    "layer_31": result_conv_1[:, :, :, 31].tolist(),
+                    "action": (
+                        a_t.tolist() if random_index <= epsilon else readout_t.tolist()
+                    ),
+                    "score": game.latest_score,
+                    "q_max": np.max(readout_t),
+                    "epsilon": epsilon,
+                    "timestampE7": int(record * 1e7),
+                }
                 game_network.append(network)
             s_t = s_t1
-            t += 1   
-            
+            t += 1
+
             # save progress every 10000 iterations
             if t % 1000 == 0:
-                saver.save(
-                    sess, "saved_networks/curve-fever-dqn", global_step=t
-                )
-                file_writer.add_summary(summary, t//1000)
+                saver.save(sess, "saved_networks/curve-fever-dqn", global_step=t)
+                file_writer.add_summary(summary, t // 1000)
 
-            if t % 10 == 0: 
-                print("TIMESTEP {} | STATE {} | EPSILON {} | ACTION {} | REWARD {} | Q_MAX {}".format(
-                t, get_current_state(t), epsilon, action_index, r_t, np.max(readout_t)))
+            if t % 10 == 0:
+                print(
+                    "TIMESTEP {} | STATE {} | EPSILON {} | ACTION {} | REWARD {} | Q_MAX {}".format(
+                        t,
+                        get_current_state(t),
+                        epsilon,
+                        action_index,
+                        r_t,
+                        np.max(readout_t),
+                    )
+                )
 
 
 def train():
-    import os
-    os.environ['SDL_VIDEODRIVER']='dummy'
+    # import os
+    # os.environ["SDL_VIDEODRIVER"] = "dummy"
     sess = tf.InteractiveSession()
-    s, readout, h_fc1 = createGraph()
-    trainNetwork(s, readout, h_fc1, sess)
+    s, readout, h_fc1, h_conv1 = createGraph()
+    trainNetwork(s, readout, h_fc1, h_conv1, sess)
 
 
 if __name__ == "__main__":
