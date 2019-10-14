@@ -6,6 +6,7 @@ from collections import deque
 from conv_net import createGraph
 import tensorflow as tf
 import time
+import json
 from csv import DictWriter
 
 ACTIONS = 3
@@ -63,6 +64,7 @@ def trainNetwork(s, readout, h_fc1, sess):
         )
         t = 0
         epsilon = INITIAL_ESPSILON
+        game_network = list()
         while 1:
             actual_time = time.time()
             readout_t = readout.eval(feed_dict={s: [s_t]})[0]
@@ -81,7 +83,9 @@ def trainNetwork(s, readout, h_fc1, sess):
                 epsilon -= (INITIAL_ESPSILON - FINAL_ESPSILON) / EXPLORE
 
             x_t1, r_t = game.step(a_t)
+            record = time.time()
             if r_t == -1:
+                
                 log_file.writerow(
                     {
                         "timestamp": t,
@@ -90,6 +94,8 @@ def trainNetwork(s, readout, h_fc1, sess):
                         "epsilon": epsilon,
                     }
                 )
+                json.dump(game_network, open('logs/history/network-{}-{}.json'.format(t, int(record * 1e7)), 'w'))
+
 
             x_t1 = np.reshape(x_t1, (80, 80, 1))
             s_t1 = np.append(x_t1, s_t[:, :, :3], axis=2)
@@ -117,6 +123,11 @@ def trainNetwork(s, readout, h_fc1, sess):
                     feed_dict={y: y_batch, a: a_batch, s: s_j_batch}
                 )
 
+                network = {
+                                tf.trainable_variables()[-1].name: tf.convert_to_tensor(tf.trainable_variables()[-1]).eval().tolist(),
+                                'timestamp': record
+                                }
+                game_network.append(network)
             s_t = s_t1
             t += 1   
             
@@ -128,9 +139,9 @@ def trainNetwork(s, readout, h_fc1, sess):
                 
             if t % 1000 == 0: 
                 file_writer.add_summary(summary, t//1000)
-                
-            # print("TIMESTEP {} | STATE {} | EPSILON {} | ACTION {} | REWARD {} | Q_MAX {}".format(
-            # t, get_current_state(t), epsilon, action_index, r_t, np.max(readout_t)))
+            if t % 10 == 0: 
+                print("TIMESTEP {} | STATE {} | EPSILON {} | ACTION {} | REWARD {} | Q_MAX {}".format(
+                t, get_current_state(t), epsilon, action_index, r_t, np.max(readout_t)))
 
 
 def train():
