@@ -4,13 +4,14 @@ import json
 import time
 from fever import Curve
 
-background = (0,0,0)
+background = (0, 0, 0)
 frame_size = 80
 
-class Game():
+
+class Game:
     def __init__(self, w, h):
         self.screen = pygame.display.set_mode((w, h))
-        self.curve = Curve(pygame.math.Vector2(50, 50)) 
+        self.curve = Curve(pygame.math.Vector2(50, 50))
         self.screen_width = w
         self.screen_height = h
         self.best_score = 0
@@ -45,13 +46,25 @@ class Game():
 
     def draw_curve(self):
         for pos in self.curve.history:
-            pygame.draw.circle(self.screen, self.curve.color, (int(pos.x), int(pos.y)), self.curve.radius, 0)
+            pygame.draw.circle(
+                self.screen,
+                self.curve.color,
+                (int(pos.x), int(pos.y)),
+                self.curve.radius,
+                0,
+            )
 
         if not self.curve.append_history:
-            pygame.draw.circle(self.screen, self.curve.color, (int(self.curve.position.x), int(self.curve.position.y)), self.curve.radius, 0)
+            pygame.draw.circle(
+                self.screen,
+                self.curve.color,
+                (int(self.curve.position.x), int(self.curve.position.y)),
+                self.curve.radius,
+                0,
+            )
 
     def handle_off_screen(self):
-        if self.curve.position.x > self.screen_width: 
+        if self.curve.position.x > self.screen_width:
             self.curve.position.x = 0
         if self.curve.position.x < 0:
             self.curve.position.x = self.screen_width
@@ -67,17 +80,26 @@ class Game():
         if score > self.best_score:
             self.best_score = score
         timestamp = int(time.time() * 1e7)
-        json.dump({
-            'history': list(map(lambda pos: {'x': int(pos.x), 'y': int(pos.y)}, self.curve.history)),
-            'timestampE7': timestamp,
-            'best_score': self.best_score,
-            },open('game_data/game_{}.json'.format(timestamp), 'w'))
+        json.dump(
+            {
+                "history": list(
+                    map(
+                        lambda pos: {"x": int(pos.x), "y": int(pos.y)},
+                        self.curve.history,
+                    )
+                ),
+                "timestampE7": timestamp,
+                "best_score": self.best_score,
+            },
+            open("game_data/game_{}.json".format(timestamp), "w"),
+        )
         self.latest_score = score
-        
+
         self.curve.history = []
 
     def pre_process_frame(self, raw_frame):
-        frame = cv2.cvtColor(cv2.resize(raw_frame, (frame_size, frame_size)), cv2.COLOR_BGR2GRAY)
+        frame = cv2.cvtColor(
+            cv2.resize(raw_frame, (frame_size, frame_size)), cv2.COLOR_BGR2GRAY
+        )
         _, frame = cv2.threshold(frame, 1, 255, cv2.THRESH_BINARY)
         return frame
-
