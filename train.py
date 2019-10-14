@@ -94,7 +94,8 @@ def trainNetwork(s, readout, h_fc1, sess):
                         "epsilon": epsilon,
                     }
                 )
-                json.dump(game_network, open('logs/history/network-{}-{}.json'.format(t, int(record * 1e7)), 'w'))
+                json.dump(game_network, open('logs/history/network-{}.json'.format(int(record * 1e7)), 'w'))
+                game_network = list()
 
 
             x_t1 = np.reshape(x_t1, (80, 80, 1))
@@ -123,10 +124,13 @@ def trainNetwork(s, readout, h_fc1, sess):
                     feed_dict={y: y_batch, a: a_batch, s: s_j_batch}
                 )
 
+                target = tf.trainable_variables()
+                print(target)
+                raise Exception
                 network = {
-                                tf.trainable_variables()[-1].name: tf.convert_to_tensor(tf.trainable_variables()[-1]).eval().tolist(),
-                                'timestamp': record
-                                }
+                    target.name: tf.convert_to_tensor(target).eval().tolist(),
+                    'timestamp': record
+                    }
                 game_network.append(network)
             s_t = s_t1
             t += 1   
