@@ -2,6 +2,7 @@ import pygame
 import cv2
 import json
 import time
+from itertools import count
 from fever import Curve
 
 background = (0, 0, 0)
@@ -16,6 +17,9 @@ class Game:
         self.screen_height = h
         self.best_score = 0
         self.latest_score = 0
+        self.time = time.time()
+        self.round_iter = count()
+        self.current = next(self.round_iter)
 
     def step(self, action):
         reward = self.update(action)
@@ -79,21 +83,27 @@ class Game:
         # print("Score : {} | best was {}".format(score, self.best_score))
         if score > self.best_score:
             self.best_score = score
-        timestamp = int(time.time() * 1e7)
+        current_time = time.time()
+        timestamp = current_time - self.time
+        timestamp_ms = int(current_time * 1e7)
         json.dump(
             {
+                'round': self.current,
                 "history": list(
                     map(
                         lambda pos: {"x": int(pos.x), "y": int(pos.y)},
                         self.curve.history,
                     )
                 ),
-                "timestampE7": timestamp,
+                "timestampE7": timestamp_ms,
+                "timestamp": timestamp,
                 "best_score": self.best_score,
             },
-            open("game_data/game_{}.json".format(timestamp), "w"),
+            open("game_data/game_{}_{}.json".format(self.current, timestamp_ms), "w"),
         )
         self.latest_score = score
+        self.time = time.time()
+        self.current = next(self.round_iter)
 
         self.curve.history = []
 
