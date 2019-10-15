@@ -39,11 +39,19 @@ class Events {
   static mouseOverImage(d, i) {
     Events.mouseOut(d,i);
     const tooltipConfig = config.d3Configs.tooltips;
+    d3.select(this.childNodes[0]).attr('r', 15)
     const group = d3.select(this.parentNode)
         .raise()
         .insert('g')
         .classed('text-tooltip', true)
         .attr('name', 'temporal-text');
+    let image = group
+      .append("svg:image")
+      .attr('x', 400+tooltipConfig.xDiference-tooltipConfig.padding)
+      .attr('y', `${-5*tooltipConfig.yBase}em`)
+      .attr("width", 200 ) 
+      .attr("height", 200 )
+      .attr("xlink:href", 'img/loading.gif');
     fetch(
       config.d3Configs.nodes.url,
       {
@@ -55,13 +63,9 @@ class Events {
       }
     ).then(response => response.blob()).then(blob => {
       let outside = URL.createObjectURL(blob)
-      group.append("svg:image")
-        .attr('x', 400+tooltipConfig.xDiference-tooltipConfig.padding)
-        .attr('y', `${tooltipConfig.yBase*2}em`)
-        .attr("width", 200 ) 
-        .attr("height", 200 )
+      image
         .attr("xlink:href", outside);
-        
+        d3.select(this.childNodes[0]).attr('r', 10)
       }
     )
   }
