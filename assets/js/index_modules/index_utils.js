@@ -39,6 +39,7 @@ class Events {
   static mouseOverImage(d, i) {
     Events.mouseOut(d,i);
     const tooltipConfig = config.d3Configs.tooltips;
+    d3.select(this.childNodes[0]).attr('r', 15)
     const group = d3.select(this.parentNode)
         .raise()
         .insert('g')
@@ -64,7 +65,7 @@ class Events {
       let outside = URL.createObjectURL(blob)
       image
         .attr("xlink:href", outside);
-        
+        d3.select(this.childNodes[0]).attr('r', 10)
       }
     )
   }
