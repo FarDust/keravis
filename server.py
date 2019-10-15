@@ -1,14 +1,25 @@
 import os
 from io import BytesIO
+os.environ["FLASK_DEBUG"] = "1"
 from flask import Flask, render_template, send_file, request, send_from_directory, make_response, url_for, json, Response
 from process_arrays import array_to_image
 import numpy as np
 
-os.environ["FLASK_DEBUG"] = "1"
 
 
 app = Flask(__name__)
 
+@app.after_request
+def add_header(r):
+    """
+    Add headers to both force latest IE rendering engine or Chrome Frame,
+    and also to cache the rendered page for 10 minutes.
+    """
+    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    r.headers["Pragma"] = "no-cache"
+    r.headers["Expires"] = "0"
+    r.headers['Cache-Control'] = 'public, max-age=0'
+    return r
 
 @app.route("/")
 def hello():
