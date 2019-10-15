@@ -37,6 +37,7 @@ class Events {
   }
 
   static mouseOverImage(d, i) {
+    Events.mouseOut(d,i);
     const tooltipConfig = config.d3Configs.tooltips;
     const group = d3.select(this.parentNode)
         .raise()
