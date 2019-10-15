@@ -20,6 +20,7 @@ const configInitializer = () => {
             timeLapse: 1000,
           },
           nodes: {
+            url: '/',
             input: {
               width: 20,
               height: 100,
@@ -31,14 +32,6 @@ const configInitializer = () => {
               'layer_31',
             ],
             result_length: 3,
-          },
-          tooltips: {
-            xDiference: 20,
-            yBase: -1,
-            viewport: 20,
-            padding: 4,
-            vectorRadius: 30,
-            timeLapse: 1000,
           },
         };
         this.d3Configs = Object.assign(this.d3Configs, configs);

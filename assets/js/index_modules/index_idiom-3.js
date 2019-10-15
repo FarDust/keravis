@@ -54,7 +54,7 @@ class Idiom2 extends Idiom {
       const input = this.svgSelector
         .append('g')
         .attr('name', 'input_layer')
-      const xOffset = 0;
+      const xOffset = 100;
       const yOffset = 100;
       const yNodeSeparation = 50
       const baseRadius = 10;
@@ -65,7 +65,20 @@ class Idiom2 extends Idiom {
         configs.input.height
         );
       
-      const links = [];
+      const links = [
+        {
+          xStart: xOffset + configs.input.width,
+          yStart: center,
+          xEnd: xOffset + 100,
+          yEnd: yOffset
+        },
+        {
+          xStart: xOffset + configs.input.width,
+          yStart: center + configs.input.height,
+          xEnd: xOffset + 100,
+          yEnd: yOffset + (layers.length-1)*yNodeSeparation
+        },
+      ];
       const secondaryLinks = []
       for (let index = 0; index < layers.length; index++) {
         this.createNetworkNode(nodeGroup, xOffset + 100, yOffset + (index * yNodeSeparation), baseRadius, layers[index], 'conv1_layer')
@@ -92,8 +105,11 @@ class Idiom2 extends Idiom {
         }
       }
       let nodes = d3.selectAll('#network > svg g g[name=output_layer]').select('circle')
-        .on('mouseover', Events.mouseOver)
+        .on('mouseenter', Events.mouseOver)
         .on('mouseout', Events.mouseOut)
+      d3.selectAll('#network > svg g g[name=conv1_layer]')
+        .on('mouseenter', Events.mouseOverImage)
+        .on('mouseout', Events.mouseOut);
       this.createLinks(links.concat(secondaryLinks))
       this.getData();
     }
@@ -103,21 +119,33 @@ class Idiom2 extends Idiom {
   startSimulation() {
     let baseColor = d3.hsl("#23d160");
     let outputNodes = '#network > svg g g circle.node-output';
+    let convNodes = '#network > svg g g[name=conv1_layer]'
     let timestep = 1000; 
     this.data.forEach( (game, index) => {
       setTimeout(() => {
         let lightScale = d3.scaleLinear()
           .domain([Math.min(...game.action), Math.max(...game.action)])
-          .range([0.7, 0.5]);
+          .range([0.8, 0.2]);
         this.updateNodes(outputNodes, lightScale, baseColor, game.action)
+        let data_layers = [];
+        config.d3Configs.nodes.layers.forEach(layerName => {
+          data_layers.push(game[layerName]);
+        });
+        d3.selectAll(convNodes)
+          .data(data_layers)
+          .enter()
       }, timestep*index);
     });
+  }
+
+  updateConv(selector) { 
+
   }
 
   updateNodes(selector, scale, color, data) {
     let nodes = d3.selectAll(selector).data(data)
       .attr('fill', (d) => {
-        color.l = scale(d);
+        color.s = scale(d);
         return color + "";
       }).attr('value', d => d)
   }
