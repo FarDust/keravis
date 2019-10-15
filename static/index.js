@@ -1,3 +1,43 @@
+function matrixTo1D(matrix) {
+    let final_array = [];
+    matrix.forEach(row => {
+        row.forEach(element => {
+            final_array.push(element);
+        });
+    });
+    return final_array;
+}
+function matrixToImage(matrix) {
+    const canvas = d3.select("#img").append("canvas");
+    const width = 200;
+    const height = 200;
+    canvas.attr("width", width)
+        .attr("height", height);
+    const node = canvas.node();
+    const ctx = node.getContext("2d");
+    const imgData = ctx.createImageData(width, height);
+    let j = 0;
+    for (let i = 0; i < imgData.data.length; i += 4) {
+        // Modify pixel data
+        console.log('====================================');
+        console.log(Math.floor(matrix[j] * 255));
+        console.log('====================================');
+        imgData.data[i + 0] = Math.floor(matrix[j] * 255);  // R value
+        imgData.data[i + 1] = Math.floor(matrix[j] * 255);    // G value
+        imgData.data[i + 2] = Math.floor(matrix[j] * 255);  // B value
+        imgData.data[i + 3] = 0;  // A value
+
+        j += 1;
+    }
+    ctx.putImageData(imgData, width, height);
+}
+const PATH = 'https://raw.githubusercontent.com/PUC-Infovis/proyecto-keravis/network-idiom/logs/history/network-15710788366707638.json?token=AHDRWGAP3EOQYJPW7MMK7225VY5UG'
+
+d3.json(PATH).then(json => {
+    const m = matrixTo1D(json[0].layer_0[0]);
+    matrixToImage(m);
+})
+
 const SOURCE = 'https://gist.githubusercontent.com/naquiroz/1fd9d012a724632b0ca889576aef5701/raw/64dd1d5717bc58cba4e78907985c7c2eec82137b/data.json';
 
 const MARGINS = { top: 10, right: 30, bottom: 30, left: 60 };
