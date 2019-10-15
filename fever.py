@@ -5,11 +5,12 @@ from pygame.math import Vector2 as Vec2
 
 curve_d = 5
 speed = 1.5
-max_turn_rate = 8.
-color = (239,79,153)
+max_turn_rate = 8.0
+color = (239, 79, 153)
 
 cut_percentage = 30
 cut_len = 30
+
 
 def circles_collided(c1, c2):
     dx = c1.x - c2.x
@@ -22,7 +23,8 @@ def circles_collided(c1, c2):
 
     return False
 
-class Curve():
+
+class Curve:
     def __init__(self, pos):
         self.position = pos
         self.radius = curve_d
@@ -45,7 +47,7 @@ class Curve():
                 self.append_history = False
 
         if self.t_cut == cut_len:
-            self.append_history = True 
+            self.append_history = True
             self.t_cut = 0
 
         position = self.position + Vec2(1, 0).rotate(self.angle) * speed
@@ -60,7 +62,7 @@ class Curve():
     def check_collision(self):
         if len(self.history) <= 9:
             return False
-        for pos in self.history[:len(self.history) - 9]:
+        for pos in self.history[: len(self.history) - 9]:
             if circles_collided(self.position, pos):
                 return True
 

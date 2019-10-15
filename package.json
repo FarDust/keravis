@@ -1,0 +1,24 @@
+{
+  "name": "proyecto-keravis",
+  "version": "1.0.0",
+  "description": "Deep Q-learning visualization project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PUC-Infovis/proyecto-keravis.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PUC-Infovis/proyecto-keravis/issues"
+  },
+  "homepage": "https://github.com/PUC-Infovis/proyecto-keravis#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^6.5.1",
+    "eslint-config-google": "^0.14.0"
+  }
+}
