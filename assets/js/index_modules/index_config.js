@@ -7,6 +7,10 @@ const configInitializer = () => {
       if (!uniqueConfigInstance) {
         uniqueConfigInstance = this;
         this.d3Configs = {
+          svgSize: {
+            height: 400,
+            width: 600,
+          },
           tooltips: {
             xDiference: 20,
             yBase: -1,
@@ -27,7 +31,15 @@ const configInitializer = () => {
               'layer_31',
             ],
             result_length: 3,
-          }
+          },
+          tooltips: {
+            xDiference: 20,
+            yBase: -1,
+            viewport: 20,
+            padding: 4,
+            vectorRadius: 30,
+            timeLapse: 1000,
+          },
         };
         this.d3Configs = Object.assign(this.d3Configs, configs);
         this.updateConfig = this.updateConfig.bind(this);

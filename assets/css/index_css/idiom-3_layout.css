@@ -1,5 +1,5 @@
 .node {
-  
+
 }
 
 .layer {
@@ -12,4 +12,12 @@
 
 .node.node-output:hover{
   
+}
+
+.text-tooltip {
+  fill: black;
+}
+
+.text-tooltip .text-tooltip-square {
+  fill: #80f153;
 }

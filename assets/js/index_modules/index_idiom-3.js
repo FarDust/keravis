@@ -11,8 +11,8 @@ class Idiom {
   createViewport() { 
     this.svgSelector = d3.select(this.selector)
       .append('svg')
-      .attr("width", '400')
-      .attr("height",'400')
+      .attr("width", config.d3Configs.svgSize.width)
+      .attr("height", config.d3Configs.svgSize.height)
   }
 
   initilize() {
@@ -35,10 +35,14 @@ class Idiom2 extends Idiom {
   constructor(source, selector) {
     super(source, selector)
     this.data;
-    d3.json(source, function(error, data) {
+    this.source = source;
+  }
+
+  getData() { 
+    d3.json(this.source, function(error, data) {
       if (error) throw error;
       
-    }).then((data)=> this.data = data)
+    }).then((data)=> this.data = data).then(() => this.startSimulation())
   }
 
   initilize() {
@@ -60,16 +64,38 @@ class Idiom2 extends Idiom {
         configs.input.width,
         configs.input.height
         );
-
+      
+      const links = [];
+      const secondaryLinks = []
       for (let index = 0; index < layers.length; index++) {
-        this.createNetworkNode(nodeGroup, xOffset+100, yOffset+(index*yNodeSeparation), baseRadius, layers[index])
-        this.createNetworkNode(nodeGroup, xOffset+200, yOffset+(index*yNodeSeparation), baseRadius, 'null_layer')
+        this.createNetworkNode(nodeGroup, xOffset + 100, yOffset + (index * yNodeSeparation), baseRadius, layers[index], 'conv1_layer')
+        this.createNetworkNode(nodeGroup, xOffset + 200, yOffset + (index * yNodeSeparation), baseRadius, 'null_layer')
+        for (let j_index = 0; j_index < layers.length; j_index++) {
+          links.push({
+            xStart: xOffset + 100,
+            yStart: yOffset + (index * yNodeSeparation),
+            xEnd: xOffset + 200,
+            yEnd: yOffset + (j_index * yNodeSeparation)
+          })
+        }
       }
       for (let index = 0; index < configs.result_length; index++) {
-        this.createNetworkNode(nodeGroup, xOffset + 300, center + (index * yNodeSeparation), baseRadius, `action-${index}`)
+        this.createNetworkNode(nodeGroup, xOffset + 300, center + (index * yNodeSeparation), baseRadius, `action-${index}`, 'output_layer')
           .classed('node-output', true)
-        
+        for (let j_index = 0; j_index < layers.length; j_index++) {
+          secondaryLinks.push({
+            xStart: xOffset + 200,
+            yStart: yOffset + (j_index * yNodeSeparation),
+            xEnd: xOffset + 300,
+            yEnd: center + (index * yNodeSeparation),
+          })
+        }
       }
+      let nodes = d3.selectAll('#network > svg g g[name=output_layer]').select('circle')
+        .on('mouseover', Events.mouseOver)
+        .on('mouseout', Events.mouseOut)
+      this.createLinks(links.concat(secondaryLinks))
+      this.getData();
     }
     this.initilized = true;
   }
@@ -84,7 +110,6 @@ class Idiom2 extends Idiom {
           .domain([Math.min(...game.action), Math.max(...game.action)])
           .range([0.7, 0.5]);
         this.updateNodes(outputNodes, lightScale, baseColor, game.action)
-        console.log(index)
       }, timestep*index);
     });
   }
@@ -97,14 +122,16 @@ class Idiom2 extends Idiom {
       }).attr('value', d => d)
   }
   
-  createNetworkNode(selector, cx, cy, r, name='null_layer') {
+  createNetworkNode(selector, cx, cy, r, id='null_layer', nameGroup='null_layer') {
     return selector.append('g')
+      .attr("transform", `translate( ${cx} , ${cy} )`)
+      .attr('name', nameGroup)
       .append('circle')
       .classed('node', true)
       .attr('fill', '#23d160')
-      .attr('name', name)
-      .attr('cx', cx)
-      .attr('cy', cy)
+      .attr('name', id)
+      .attr('cx', 0)
+      .attr('cy', 0)
       .attr('r', r)
   }
 
@@ -115,6 +142,18 @@ class Idiom2 extends Idiom {
         .attr('y', y)
         .attr('width', width)
         .attr('height', height)
+  }
+
+  createLinks(links) {
+    let lines = this.svgSelector.selectAll('line')
+      .data(links)
+      .enter()
+      .append('line')
+      .style('stroke', '#aaa')
+    lines.attr('x1', d => d.xStart)
+      .attr('y1', d => d.yStart)
+      .attr('x2', d => d.xEnd)
+      .attr('y2', d=> d.yEnd)
   }
 
 }
