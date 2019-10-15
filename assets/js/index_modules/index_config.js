@@ -20,7 +20,7 @@ const configInitializer = () => {
             timeLapse: 1000,
           },
           nodes: {
-            url: '/',
+            url: '/image',
             input: {
               width: 20,
               height: 100,
