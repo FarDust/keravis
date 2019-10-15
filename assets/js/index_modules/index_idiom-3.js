@@ -108,8 +108,7 @@ class Idiom2 extends Idiom {
         .on('mouseenter', Events.mouseOver)
         .on('mouseout', Events.mouseOut)
       d3.selectAll('#network > svg g g[name=conv1_layer]')
-        .on('mouseenter', Events.mouseOverImage)
-        .on('mouseout', Events.mouseOut);
+        .on('mouseenter', Events.mouseOverImage);
       this.createLinks(links.concat(secondaryLinks))
       this.getData();
     }
