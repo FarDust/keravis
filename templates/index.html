@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html style="scroll-behavior: smooth">
+
+<head>
+    <title>Entrega 2</title>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+    <link rel="stylesheet" href="../assets/css/index_css/idiom-3_layout.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Cache-Control" content="no-store" />
+</head>
+
+<body>
+    <script src="../assets/js/index_modules/index_config.js"></script>
+    <script src="../assets/js/index_modules/index_utils.js"></script>
+    <section class="hero is-success is-fullheight">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <h1 class="title">
+                    Reinforcement Curve Fever
+                </h1>
+                <h2 class="subtitle">
+                    Uso de la técnica de reinforcement learning para jugar curve fever a traves de DQN con Tensorflow.
+                </h2>
+            </div>
+        </div>
+
+        <div class="hero-foot is-fullheight">
+            <nav class="tabs is-boxed is-fullwidth is-large">
+                <div class="container">
+                    <ul>
+                        <li><a href="#idiom1">Idiom 1</a></li>
+                        <li><a href="#idiom2">Idiom 2</a></li>
+                        <li><a href="#idiom3">Idiom 3</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </section>
+
+    <section class="hero">
+        <div class="hero-body">
+            <div class="container has-text-justified">
+                <h1 class="title is-4">
+                    El juego
+                </h1>
+                <p>
+                    <em>Curve Fever</em> es un juego multijugador cuyo objetivo es alcanzar la mayor cantidad de
+                    puntaje. Cada jugador cuenta con una <em>serpiente</em> que va creciendo infinitamente a lo largo
+                    del mapa. Esta serpiente además va dejando pequeños huecos cada cierto tiempo, por los cuales puede
+                    atravesar para seguir jugando sin quedar encerrado. Múltiples variaciones existen donde además
+                    existen <em>powerups</em> y otras modaldiades.
+                </p>
+                <p>
+                    Nuestro equipo se enfocará en la version mas simple del juego, donde además se cuenta con solo una
+                    serpiente y no varias, dado que el juego no será multijugador.
+                </p>
+            </div>
+            <br>
+            <div class="container has-text-justified">
+                <h1 class="title is-4">
+                    ¿Qué haremos?
+                </h1>
+                <p>
+                    Utilizaremos un modelo de <strong>Deep Reinforcement Learning</strong> para entrenar un jugador que
+                    sea capaz de alcanzar altos puntajes luego de varias iteraciones de entrenamiento. En particular,
+                    utilizaremos un algoritmo conocido como <strong>Deep Q Learning</strong>. Entrenamos el modelo con más de 60 iteraciones del juego, donde en cada una grabamos los movimiento y el puntaje logrado, así como la duración de aquella ronda.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="idiom1" class="hero is-fullheight">
+        <div class="hero-body is-fullheight">
+            <div class="container has-text-justified">
+                <div class="columns is-centered is-vcentered">
+                    <div class="column is-4 is-narrow">
+                        <h1 class="title">
+                            Idiom 1
+                        </h1>
+                        <div class="columns is-centered">
+                            <h2 class="subtitle">
+                                A continuación mostramos las grabaciones de varias iteraciones del juego, además
+                                de los puntajes obtenidos en cada ronda.
+                            </h2>
+                        </div>
+                        <div class="has-text-left-tablet">
+                            <div class="container has-text-justified">
+                                <h5 class="has-text-justified">
+                                    De esta forma se puede llegar a una respuesta concreta de tres principales
+                                    interrogantes:
+                                    <div class="content">
+                                        <ul>
+                                            <li>Evolución de puntajes a medida que pasan las rondas de un juego</li>
+                                            <li>¿Cómo mejora el algoritmo en el tiempo?</li>
+                                            <li>¿Modelo ganó o perdió la ronda?</li>
+                                        </ul>
+                                    </div>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div id="scatter" class="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <section id="idiom2" class="hero is-fullheight">
+        <div class="hero-body is-fullheight">
+            <div class="container has-text-justified">
+                <div class="columns is-centered is-vcentered">
+                    <div class="column is-4 is-narrow">
+                        <h1 class="title">
+                            Idiom 2
+                        </h1>
+                        <div class="columns is-centered">
+                            <h2 class="subtitle">
+                                Nuevamente se presentan grabaciones de varias iteraciones del juego, en el se ve el
+                                movimiento
+                                de las serpientes a lo largo de varias rondas y a la vez de varios conjuntos de juegos.
+                            </h2>
+                        </div>
+                        <div class="has-text-left-tablet">
+                            <div class="container has-text-justified">
+                                <h5 class="has-text-justified">
+                                    Se observa el comportamiento del bot a lo largo de múltiples iteraciones
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <figure>
+                            <img src="../img/curve-image.jpg" width="70%">
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="idiom3" class="hero is-fullheight">
+        <div class="hero-body is-fullheight">
+            <div class="container has-text-justified">
+                <div class="columns is-centered is-vcentered">
+                    <div class="column is-4 is-narrow">
+                        <h1 class="title">
+                            Idiom 3
+                        </h1>
+                        <div class="columns is-centered">
+                            <h2 class="subtitle">
+                                En este caso se muestran las conexiones de la red al tomar las decisiones sobre
+                                que sentido debe moverse.
+                            </h2>
+                        </div>
+                        <div class="has-text-left-tablet">
+                            <div class="container has-text-justified">
+                                <h5 class="has-text-justified">
+                                    La semántica de los datos a visualizar son los focos de atención e interpretación
+                                    de <i>frames</i> del juego. Con esto, el programa establece conexiones de atención e
+                                    interpretaciones para luego tomar una decisión con respeco a que dirección ir.
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div id="network" class="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="../static/index.js"></script>
+    <script src="../assets/js/index_modules/index_idiom-3.js"></script>
+</body>
+
+</html>

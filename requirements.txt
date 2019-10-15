@@ -1,0 +1,6 @@
+numpy==1.16.5
+matplotlib==3.0.3
+opencv_contrib_python==3.4.3.18
+pygame==1.9.6
+tensorflow==1.14.0
+flask==1.1.1 
