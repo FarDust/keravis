@@ -186,5 +186,5 @@ class Idiom2 extends Idiom {
 
 }
 
-let idiom = new Idiom2('logs/history/network-15710788366707638.json', '#network')
+let idiom = new Idiom2('../logs/history/network-15710788366707638.json', '#network')
 idiom.initilize()
