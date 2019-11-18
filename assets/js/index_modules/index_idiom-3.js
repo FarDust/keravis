@@ -31,7 +31,7 @@ class Idiom {
   }
 }
 
-class Idiom2 extends Idiom {
+class Idiom3 extends Idiom {
   constructor(source, selector) {
     super(source, selector)
     this.data;
@@ -185,5 +185,5 @@ class Idiom2 extends Idiom {
 
 }
 
-let idiom = new Idiom2('../logs/history/network-15710788366707638.json', '#network')
+let idiom = new Idiom3('../logs/history/network-15710788366707638.json', '#network')
 idiom.initilize()
