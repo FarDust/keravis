@@ -8,8 +8,8 @@ const configInitializer = () => {
         uniqueConfigInstance = this;
         this.d3Configs = {
           svgSize: {
-            height: 400,
-            width: 600,
+            height: 480,
+            width: 640,
           },
           tooltips: {
             xDiference: 20,
@@ -32,6 +32,9 @@ const configInitializer = () => {
               'layer_31',
             ],
             result_length: 3,
+          },
+          snake: {
+            snakeRadius: 6,
           },
         };
         this.d3Configs = Object.assign(this.d3Configs, configs);
