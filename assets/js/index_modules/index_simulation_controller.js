@@ -1,27 +1,23 @@
 /* eslint-disable require-jsdoc */
 
 class SimulationController {
-  constructor(simulationLength, timeStep=1000) {
+  constructor(timeStep=1000) {
     this.subscribers = [];
-    this.indexArray = Array(simulationLength).fill().map((_, i) => i);
     this.timestep = timeStep;
   }
 
   startSimulation() {
-    this.indexArray.forEach( (index) => {
-      setTimeout(() => {
-        this.notifyTimeStep(index);
-        console.debug('executed');
-      }, this.timestep*index);
-    });
+    setInterval(() => {
+      this.notifyTimeStep();
+      console.debug('executed');
+    }, this.timestep);
   }
 
-  notifyTimeStep(index) {
+  notifyTimeStep() {
     this.subscribers.forEach((idiom) => {
-      idiom.nextSimulationStep(index);
+      idiom.nextSimulationStep();
     });
   }
-
 
   subcribeIdiom(idiom) {
     this.subscribers.push(idiom);

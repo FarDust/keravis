@@ -1,14 +1,17 @@
 /* eslint-disable require-jsdoc */
 class Idiom {
-  constructor(source, selector) {
-    this.source = source;
+  constructor(sources, selector) {
+    this.sources = sources;
+    this.source = this.sources[0];
     this.selector = selector;
     this.data;
     this.nextSimulationStep = this.nextSimulationStep.bind(this);
     this.simulate = this.simulate.bind(this);
+    this.reset = this.reset.bind(this);
     this.initilized = false;
     this.state = {
-
+      focusSource: 0,
+      focusTime: 0,
     };
   }
 
@@ -27,14 +30,12 @@ class Idiom {
   getData() {
     return d3.json(this.source, function(error, data) {
       if (error) throw error;
-    }).then((data) => this.data = data)
-        .then(() => console.log('Data adquired!'));
+    }).then((data) => this.data = data);
   }
 
   initilize() {
     if (!this.initilized) {
       this.createViewport();
-      console.debug(this, 'created');
       this.getData();
     }
   }
@@ -48,12 +49,30 @@ class Idiom {
 
   }
 
-  simulate(index) {
+  simulate() {
 
   }
 
-  nextSimulationStep(index) {
+  nextSimulationStep() {
 
+  }
+
+  nextSource() {
+    if (this.state.focusSource === this.sources.length - 1) {
+      this.setState('focusSource', 0);
+    } else {
+      this.setState('focusSource', this.state.focusSource + 1);
+    }
+    this.source = this.sources[this.state.focusSource];
+    return this.source;
+  }
+
+  reset() {
+    this.initilized = false;
+    this.setState('focusTime', 0);
+    this.source = this.nextSource();
+    this.svgSelector.remove();
+    this.initilize();
   }
 }
 

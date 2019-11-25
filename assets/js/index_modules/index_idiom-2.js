@@ -5,8 +5,6 @@ class Idiom2 extends Idiom {
   constructor(source, selector) {
     super(source, selector);
     this.data;
-    this.state = {
-    };
   }
 
   initilize() {
@@ -37,7 +35,9 @@ class Idiom2 extends Idiom {
       const scoreTextWidth = scoreText.node().getBBox()['width'];
       const roundText = this.state.score.append('text')
           .text('Round: ')
-          .attr('transform', `translate(${20 + scoreTextWidth + 5 + 30} , ${20} )`);
+          .attr('transform', `translate(
+            ${20 + scoreTextWidth + 5 + 30} , ${20}
+            )`);
       const roundTextWidth = roundText.node().getBBox()['width'];
       this.setState('currentScore', this.state.score
           .append('text')
@@ -47,7 +47,9 @@ class Idiom2 extends Idiom {
       this.setState('currentRound', this.state.score
           .append('text')
           .text('No data!')
-          .attr('transform', `translate(${20 + scoreTextWidth + 5 + 30 + roundTextWidth + 5} , ${20} )`)
+          .attr('transform', `translate(
+            ${20 + scoreTextWidth + 5 + 30 + roundTextWidth + 5} , ${20} 
+            )`)
       );
       this.initilized = true;
     }
@@ -59,17 +61,30 @@ class Idiom2 extends Idiom {
     });
   }
 
-  nextSimulationStep(index) {
-    const simulation = this.data.history[index];
-    this.state.snake.append('g').attr('name', 'snake-path')
-        .selectAll('circle')
-        .data([simulation])
-        .enter()
-        .append('circle')
-        .attr('cx', (d) => d.x)
-        .attr('cy', (d) => d.y)
-        .attr('r', config.d3Configs.snake.snakeRadius)
-        .classed('snake', true);
-    this.state.currentScore.text(index);
+  nextSimulationStep() {
+    if (this.data) {
+      this.simulate();
+    } else {
+      console.warn('Simulation started before data was adquired!');
+    }
+    this.setState('focusTime', this.state.focusTime + 1);
+  }
+
+  simulate() {
+    if (this.state.focusTime == this.data.history.length) {
+      this.reset();
+    } else {
+      const simulation = this.data.history[this.state.focusTime];
+      this.state.snake.append('g').attr('name', 'snake-path')
+          .selectAll('circle')
+          .data([simulation])
+          .enter()
+          .append('circle')
+          .attr('cx', (d) => d.x)
+          .attr('cy', (d) => d.y)
+          .attr('r', config.d3Configs.snake.snakeRadius)
+          .classed('snake', true);
+      this.state.currentScore.text(this.state.focusTime);
+    }
   }
 }

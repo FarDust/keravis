@@ -82,16 +82,21 @@ class Idiom3 extends Idiom {
     };
   }
 
-  nextSimulationStep(index) {
+  nextSimulationStep() {
     if (this.data) {
-      this.simulate(index);
+      if (this.state.focusTime == this.data.length) {
+        this.reset();
+      } else {
+        this.simulate();
+      }
     } else {
       console.warn('Simulation started before data was adquired!');
     }
+    this.setState('focusTime', this.state.focusTime + 1);
   }
 
-  simulate(index) {
-    const game = this.data[index];
+  simulate() {
+    const game = this.data[this.state.focusTime];
     const lightScale = d3.scaleLinear()
         .domain([Math.min(...game.action), Math.max(...game.action)])
         .range([0.8, 0.2]);

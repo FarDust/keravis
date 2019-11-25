@@ -78,5 +78,13 @@ def data(json_file):
     data = json.load(open(json_url))
     return Response(json.dumps(data))
 
+
+@app.route('/data_manifest')
+def data_manifest():
+    logs = list(map(lambda x: os.path.join('logs', 'history', x), os.listdir(os.path.join('./logs/history'))[1:]))
+    games = list(map(lambda x: os.path.join('game_data', x) , os.listdir(os.path.join('./game_data'))[1:]))
+    return Response(json.dumps([games, logs]))
+
+
 if __name__ == "__main__":
     app.run()
