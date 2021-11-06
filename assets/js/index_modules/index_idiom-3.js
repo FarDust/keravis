@@ -64,8 +64,11 @@ class Idiom3 extends Idiom {
           });
         }
       }
+
       const nodes = d3.selectAll('#network > svg g g[name=output_layer]').select('circle')
-          .on('mouseenter', Events.mouseOver)
+          .on('mouseenter',
+              () => d3.select(this.simulationControl.outputNodes).each(Events.mouseOver)
+          )
           .on('mouseout', Events.mouseOut);
       d3.selectAll('#network > svg g g[name=conv1_layer]')
           .on('mouseenter', Events.mouseOverImage);
@@ -90,7 +93,7 @@ class Idiom3 extends Idiom {
         this.simulate();
       }
     } else {
-      console.warn('Simulation started before data was adquired!');
+      console.warn('Simulation started before data was acquired!');
     }
     this.setState('focusTime', this.state.focusTime + 1);
   }
@@ -111,6 +114,8 @@ class Idiom3 extends Idiom {
     d3.selectAll(this.simulationControl.convNodes)
         .data(dataLayers)
         .enter();
+    d3.selectAll(this.simulationControl.outputNodes);
+    // .each(Events.mouseOver).call(Events.mouseOut);
   }
 
   updateConv(selector) {
@@ -119,6 +124,7 @@ class Idiom3 extends Idiom {
 
   updateNodes(selector, scale, color, data) {
     const nodes = d3.selectAll(selector).data(data)
+        // .enter()
         .attr('fill', (d) => {
           color.s = scale(d);
           return color + '';

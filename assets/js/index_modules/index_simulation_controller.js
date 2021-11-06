@@ -1,5 +1,6 @@
 /* eslint-disable require-jsdoc */
 
+// eslint-disable-next-line no-unused-vars
 class SimulationController {
   constructor(timeStep=1000) {
     this.subscribers = [];
@@ -9,7 +10,6 @@ class SimulationController {
   startSimulation() {
     setInterval(() => {
       this.notifyTimeStep();
-      console.debug('executed');
     }, this.timestep);
   }
 

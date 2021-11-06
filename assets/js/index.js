@@ -11,7 +11,7 @@ const createIdioms = (dataLinks) => {
   idiom3.initilize();
   idiom3.setSimulation();
 
-  simulation = new SimulationController(30);
+  simulation = new SimulationController(60);
   simulation.subcribeIdiom(idiom2);
   simulation.subcribeIdiom(idiom3);
   simulation.startSimulation();

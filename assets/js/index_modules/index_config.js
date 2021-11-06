@@ -34,7 +34,7 @@ const configInitializer = () => {
             result_length: 3,
           },
           snake: {
-            snakeRadius: 6,
+            snakeRadius: 5,
           },
         };
         this.d3Configs = Object.assign(this.d3Configs, configs);

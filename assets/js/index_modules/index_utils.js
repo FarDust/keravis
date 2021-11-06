@@ -1,10 +1,53 @@
 /* eslint-disable require-jsdoc */
+
+const arrayToImageURI = (array) => {
+  const width = array[0].length;
+  const height = array[0][0].length;
+  const buffer = new Uint8ClampedArray(width * height * 4);
+  const max = d3.max(array[0], (d) => {
+    return d3.max(d);
+  });
+  const min = d3.min(array[0], (d) => {
+    return d3.min(d);
+  });
+  const scale = d3.scaleLinear().domain([min, max]).range([0, 255]);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const pos = (y * width + x) * 4; // position in buffer based on x and y
+      buffer[pos] = scale(array[0][x][y]); // some R value [0, 255]
+      buffer[pos+1] = scale(array[0][x][y]); // some G value
+      buffer[pos+2] = scale(array[0][x][y]); // some B value
+      buffer[pos+3] = 255; // set alpha channel
+    }
+  }
+  // create off-screen canvas element
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = width;
+  canvas.height = height;
+
+  // create imageData object
+  const idata = ctx.createImageData(width, height);
+
+  // set our buffer as source
+  idata.data.set(buffer);
+
+  // update canvas with new data
+  ctx.putImageData(idata, 0, 0);
+
+  ctx.scale(100, 100);
+  const dataURI = canvas.toDataURL(); // produces a PNG file
+
+  return dataURI;
+};
+
 class Events {
   static mouseOver(d, i) {
     const tooltipConfig = config.d3Configs.tooltips;
     const value = d;
     const tooltips = [
-      `Actual value: ${value}`,
+      `Actual value: ${Math.round((value + Number.EPSILON) * 1000) / 1000}`,
     ];
     const group = d3.select(this.parentNode)
         .raise()
@@ -53,6 +96,9 @@ class Events {
         .attr('width', 200 )
         .attr('height', 200 )
         .attr('xlink:href', 'img/loading.gif');
+    /*
+    This code was intended to load images from the server.
+
     fetch(
         config.d3Configs.nodes.url,
         {
@@ -69,6 +115,8 @@ class Events {
       d3.select(this.childNodes[0]).attr('r', 10);
     }
     );
+    */
+    image.attr('xlink:href', arrayToImageURI(d));
   }
 }
 
