@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 
 
 def array_to_image(matrix, io):
-    img = plt.imshow(matrix, interpolation='nearest', aspect="equal")
-    img.set_cmap('hot')
-    plt.axis('off')
+    img = plt.imshow(matrix, interpolation="nearest", aspect="equal")
+    img.set_cmap("hot")
+    plt.axis("off")
     plt.savefig(io, format="png", bbox_inches="tight", dpi=600)
 
 

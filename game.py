@@ -88,7 +88,7 @@ class Game:
         timestamp_ms = int(current_time * 1e7)
         json.dump(
             {
-                'round': self.current,
+                "round": self.current,
                 "history": list(
                     map(
                         lambda pos: {"x": int(pos.x), "y": int(pos.y)},

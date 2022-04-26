@@ -8,7 +8,7 @@ class Idiom {
     }
   }
 
-  createViewport() { 
+  createViewport() {
     this.svgSelector = d3.select(this.selector)
       .append('svg')
       .attr("width", config.d3Configs.svgSize.width)
@@ -26,7 +26,7 @@ class Idiom {
     this.update()
   }
 
-  update() { 
+  update() {
 
   }
 }
@@ -38,10 +38,10 @@ class Idiom2 extends Idiom {
     this.source = source;
   }
 
-  getData() { 
+  getData() {
     d3.json(this.source, function(error, data) {
       if (error) throw error;
-      
+
     }).then((data)=> this.data = data).then(() => this.startSimulation())
   }
 
@@ -64,7 +64,7 @@ class Idiom2 extends Idiom {
         configs.input.width,
         configs.input.height
         );
-      
+
       const links = [
         {
           xStart: xOffset + configs.input.width,
@@ -119,7 +119,7 @@ class Idiom2 extends Idiom {
     let baseColor = d3.hsl("#23d160");
     let outputNodes = '#network > svg g g circle.node-output';
     let convNodes = '#network > svg g g[name=conv1_layer]'
-    let timestep = 1000; 
+    let timestep = 1000;
     this.data.forEach( (game, index) => {
       setTimeout(() => {
         let lightScale = d3.scaleLinear()
@@ -137,7 +137,7 @@ class Idiom2 extends Idiom {
     });
   }
 
-  updateConv(selector) { 
+  updateConv(selector) {
 
   }
 
@@ -148,7 +148,7 @@ class Idiom2 extends Idiom {
         return color + "";
       }).attr('value', d => d)
   }
-  
+
   createNetworkNode(selector, cx, cy, r, id='null_layer', nameGroup='null_layer') {
     return selector.append('g')
       .attr("transform", `translate( ${cx} , ${cy} )`)

@@ -1,13 +1,24 @@
 import os
 from io import BytesIO
+
 os.environ["FLASK_DEBUG"] = "1"
-from flask import Flask, render_template, send_file, request, send_from_directory, make_response, url_for, json, Response
+from flask import (
+    Flask,
+    render_template,
+    send_file,
+    request,
+    send_from_directory,
+    make_response,
+    url_for,
+    json,
+    Response,
+)
 from process_arrays import array_to_image
 import numpy as np
 
 
-
 app = Flask(__name__)
+
 
 @app.after_request
 def add_header(r):
@@ -18,8 +29,9 @@ def add_header(r):
     r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     r.headers["Pragma"] = "no-cache"
     r.headers["Expires"] = "0"
-    r.headers['Cache-Control'] = 'public, max-age=0'
+    r.headers["Cache-Control"] = "public, max-age=0"
     return r
+
 
 @app.route("/")
 def hello():
@@ -49,9 +61,8 @@ def image():
     array_to_image(matrix, output)
     output.seek(0)
     response = make_response(output.read())
-    response.headers.set('Content-Type', 'image/png')
-    response.headers.set(
-        'Content-Disposition', 'attachment', filename='tooltip.png')
+    response.headers.set("Content-Type", "image/png")
+    response.headers.set("Content-Disposition", "attachment", filename="tooltip.png")
     return response
 
 
@@ -77,6 +88,7 @@ def data(json_file):
     json_url = os.path.join(SITE_ROOT, "", json_file)
     data = json.load(open(json_url))
     return Response(json.dumps(data))
+
 
 if __name__ == "__main__":
     app.run()

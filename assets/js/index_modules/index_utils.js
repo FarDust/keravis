@@ -58,10 +58,10 @@ class Events {
       group.append("svg:image")
         .attr('x', 400+tooltipConfig.xDiference-tooltipConfig.padding)
         .attr('y', `${tooltipConfig.yBase*2}em`)
-        .attr("width", 200 ) 
+        .attr("width", 200 )
         .attr("height", 200 )
         .attr("xlink:href", outside);
-        
+
       }
     )
   }
